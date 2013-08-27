@@ -1,52 +1,70 @@
-<% if @player_blackjack %>
-  <div class='alert alert-success'>You have blackjack! You win!</div>
-<% elsif @player_busts %>
-  <div class='alert alert-error'>You bust! You lose!</div>
-<% elsif !session[:player_stands] %>
-  <h4>Do you want to hit or stand?</h4>
-  <form action='/hit_stand' method='post'>
-    <input type='submit' class='btn' name='hit' value='Hit' />
-    <input type='submit' class='btn' name='stand' value='Stand' />
-  </form>
-<% elsif @dealer_blackjack %>
-  <div class='alert alert-error'>Dealer has blackjack! You lose!</div>
-<% elsif @dealer_busts %>
-  <div class='alert alert-success'>Dealer busts! You win!</div>
-<% elsif @dealer_total > @player_total %>
-  <div class='alert alert-error'>Dealer wins!</div>
-<% elsif @player_total > @dealer_total %>
-  <div class='alert alert-success'>You win!</div>
-<% else %>
-  <div class='alert'>Tie!</div>
-<% end %>
+<div id='game'>
+  <% @player_total = total(session[:player_hand]) %>
+  <% @dealer_total = total(session[:dealer_hand]) %>
+  <% @player_stand = session[:player_stand] %>
+  <% @dealer_stand = session[:dealer_stand] %>
 
-<div class='well'>
-  <h3><%= session[:player_name] %>'s cards:</h3>
-  <ul class='inline'>
-    <% session[:player_hand].each do |card| %>
-      <li><%= card_img(card) %></li>
+  <% if !(@player_stand) %>
+    <% if @player_total == 21 %>
+      <div class='alert alert-success'>You have blackjack! You win!</div>
+    <% elsif @player_total > 21 %>
+      <div class='alert alert-error'>You bust! You lose!</div>
+    <% else %>
+      <h4>Do you want to hit or stand?</h4>
+      <form action='/player_hit' method='post'>
+        <input type='submit' class='btn' id='player_hit' name='hit' value='Hit'>
+      </form>
+      <form action='/player_stand' method='post'>
+        <input type='submit' class='btn' id='player_stand' name='stand'
+          value='Stand'>
+      </form>
     <% end %>
-  </ul>
-  <h4>Total: <%= @player_total %></h4>
-</div>
+  <% else %>
+    <% until @dealer_total > 17 && @dealer_total > @player_total %>
+        <% session[:dealer_hand] << session[:deck].pop %>
+        <% @dealer_total = total(session[:dealer_hand]) %>
+    <% end %>
 
-<div class='well'>
-  <h3>Dealer's cards:</h3>
-  <ul class='inline'>
-    <% session[:dealer_hand].each_with_index do |card, idx| %>
-      <% if idx == 0 && !session[:player_stands] %>
-        <li><img src='/images/cards/cover.jpg' alt='hidden card'></li>
-      <% else %>
+    <% if @dealer_total == 21 %>
+      <div class='alert alert-error'>Dealer has blackjack! You lose!</div>
+    <% elsif @dealer_total > 21 %>
+      <div class='alert alert-success'>Dealer busts! You win!</div>
+    <% elsif @dealer_total > @player_total %>
+      <div class='alert alert-error'>Dealer wins!</div>
+    <% elsif @player_total > @dealer_total %>
+      <div class='alert alert-success'>You win!</div>
+    <% else %>
+      <div class='alert'>Tie!</div>
+    <% end %>
+  <% end %>
+
+  <div class='well'>
+    <h3><%= session[:player_name] %>'s cards:</h3>
+    <ul class='inline'>
+      <% session[:player_hand].each do |card| %>
         <li><%= card_img(card) %></li>
       <% end %>
-    <% end %>
-  </ul>
-  <h4>
-    <% if session[:player_stands] %>
-      Total: <%= @dealer_total %>
-    <% else %>
-      Total hidden
-    <% end %>
-  </h4>
-</div>
+    </ul>
+    <h4>Total: <%= @player_total %></h4>
+  </div>
 
+  <div class='well'>
+    <h3>Dealer's cards:</h3>
+    <ul class='inline'>
+      <% session[:dealer_hand].each_with_index do |card, idx| %>
+        <% if idx == 0 && !session[:player_stands] %>
+          <li><img src='/images/cards/cover.jpg' alt='hidden card'></li>
+        <% else %>
+          <li><%= card_img(card) %></li>
+        <% end %>
+      <% end %>
+    </ul>
+    <h4>
+      <% if session[:player_stands] %>
+        Total: <%= @dealer_total %>
+      <% else %>
+        Total hidden
+      <% end %>
+    </h4>
+  </div>
+</div>

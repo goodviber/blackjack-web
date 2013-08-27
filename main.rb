@@ -70,41 +70,26 @@ post '/setup' do
   session[:dealer_hand] = []
   2.times { session[:player_hand] << session[:deck].pop }
   2.times { session[:dealer_hand] << session[:deck].pop }
-  session[:player_stands] = false
-  session[:dealer_stands] = false
+  session[:player_stand] = false
+  session[:dealer_stand] = false
 
   redirect '/blackjack'
+end
+
+get '/newgame' do
+  erb :getbet
 end
 
 get '/blackjack' do
-  @player_total = total(session[:player_hand])
-  @dealer_total = total(session[:dealer_hand])
-  @player_busts = @player_total > 21
-  @player_blackjack = @player_total == 21
-  @dealer_busts = @dealer_total > 21
-  @dealer_blackjack = @dealer_total == 21
-
-  if (@player_blackjack || @player_busts) || (@player_stands &&
-     (@dealer_blackjack || @dealer_busts))
-    erb :blackjack
-  elsif session[:player_stands] && !session[:@dealer_stands]
-    if @dealer_total >= 17 && @dealer_total >= @player_total
-      session[:dealer_stands] = true
-    else
-      session[:dealer_hand] << session[:deck].pop
-      redirect '/blackjack'
-    end
-  end
-
   erb :blackjack
 end
 
-post '/hit_stand' do
-  if params.include?('hit')
-    session[:player_hand] << session[:deck].pop
-  elsif params.include?('stand')
-    session[:player_stands] = true
-  end
+post '/player_hit' do
+  session[:player_hand] << session[:deck].pop
+  erb :blackjack, :layout => false
+end
 
-  redirect '/blackjack'
+post '/player_stand' do
+  session[:player_stand] = true
+  erb :blackjack, :layout => false
 end
