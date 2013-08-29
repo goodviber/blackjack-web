@@ -4,7 +4,7 @@
     <title>Blackjack</title>
     <link rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/application.css">
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+    <script src="jquery-1.10.2.min.js">
     </script>
     <script src="application.js"></script>
   </head>
@@ -13,9 +13,13 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
+            <a class="brand" href="/">Blackjack</a>
             <ul class="nav">
-              <li><a href="/set_player">Reset</a></li>
-              <li><a href="http://julienthomas.net">Blog</a>
+              <p class='navbar-text' id='cash'>
+                Cash: $<%= session[:player_cash] %>
+              </p>
+              <li>
+              </li>
             </ul>
         </div>
       </div>

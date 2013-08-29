@@ -7,16 +7,19 @@
   <% if !(@player_stand) %>
     <% if @player_total == 21 %>
       <div class='alert alert-success'>You have blackjack! You win!</div>
+      <% session[:player_cash] += session[:current_bet] %>
+      <% @gameover = true %>
     <% elsif @player_total > 21 %>
       <div class='alert alert-error'>You bust! You lose!</div>
+      <% session[:player_cash] -= session[:current_bet] %>
+      <% @gameover = true %>
     <% else %>
-      <h4>Do you want to hit or stand?</h4>
-      <form action='/player_hit' method='post'>
-        <input type='submit' class='btn' id='player_hit' name='hit' value='Hit'>
-      </form>
-      <form action='/player_stand' method='post'>
-        <input type='submit' class='btn' id='player_stand' name='stand'
-          value='Stand'>
+      <form action='/hit_stand' method='post' class='form-inline'>
+        <label style='font-size: 20px'>Hit or stand?</label>
+        <button type='submit' class='btn btn-success' id='player_hit'
+          name='hit'>Hit</button>
+        <button type='submit' class='btn btn-warning' id='player_stand'
+          name='stand'>Stand</button>
       </form>
     <% end %>
   <% else %>
@@ -27,16 +30,37 @@
 
     <% if @dealer_total == 21 %>
       <div class='alert alert-error'>Dealer has blackjack! You lose!</div>
+      <% session[:player_cash] -= session[:current_bet] %>
+      <% @gameover = true %>
     <% elsif @dealer_total > 21 %>
       <div class='alert alert-success'>Dealer busts! You win!</div>
+      <% session[:player_cash] += session[:current_bet] %>
+      <% @gameover = true %>
     <% elsif @dealer_total > @player_total %>
       <div class='alert alert-error'>Dealer wins!</div>
+      <% session[:player_cash] -= session[:current_bet] %>
+      <% @gameover = true %>
     <% elsif @player_total > @dealer_total %>
       <div class='alert alert-success'>You win!</div>
+      <% session[:player_cash] += session[:current_bet] %>
+      <% @gameover = true %>
     <% else %>
-      <div class='alert'>Tie!</div>
+      <div class='alert alert-info'>Tie!</div>
+      <% @gameover = true %>
     <% end %>
   <% end %>
+
+  <h4>Cash: $<%= "%01d" % session[:player_cash].to_i %></h4>
+
+  <% if @gameover %>
+    <form action='/setup' method='get' class='form-inline'>
+      <label>Bet:</label>
+      <input type='text' name='bet'>
+      <button type='submit' class='btn btn-primary'>Play Again</button>
+    </form>
+  <% end %>
+
+
 
   <div class='well'>
     <h3><%= session[:player_name] %>'s cards:</h3>
@@ -53,7 +77,9 @@
     <ul class='inline'>
       <% session[:dealer_hand].each_with_index do |card, idx| %>
         <% if idx == 0 && !session[:player_stands] %>
-          <li><img src='/images/cards/cover.jpg' alt='hidden card'></li>
+          <li>
+            <img src='/images/cards/cover.jpg' alt='hidden card' class='card'>
+          </li>
         <% else %>
           <li><%= card_img(card) %></li>
         <% end %>

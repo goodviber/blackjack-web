@@ -28,7 +28,7 @@ helpers do
       card[1]
     end
 
-    "<img src='/images/cards/#{suit}_#{name}.jpg' alt='#{name} of #{suit}'>"
+    "<img src='/images/cards/#{suit}_#{name}.jpg' alt='#{name} of #{suit}' class='card'>"
   end
 
   def total(cards)
@@ -49,20 +49,22 @@ end
 set :sessions, true
 
 get '/' do
-  if session[:player_name].nil?
-    redirect '/set_player'
-  end
-
-  redirect '/blackjack'
-end
-
-get '/set_player' do
+  session[:player_cash] = 500
   erb :set_player
 end
 
-post '/setup' do
+post '/new_player' do
+  if params[:bet].nil? || params[:bet].to_i < 1
+    @error = "You must enter a positive integer for your bet."
+    erb :set_player
+  end
+
+  session[:current_bet] = params[:bet].to_i
   session[:player_name] = params[:player_name]
-  session[:player_cash] = 500
+  redirect '/setup'
+end
+
+get '/setup' do
   suits = %w[H D C S]
   cards = %w[A 2 3 4 5 6 7 8 9 10 K Q J]
   session[:deck] = suits.product(cards).shuffle
@@ -81,15 +83,30 @@ get '/newgame' do
 end
 
 get '/blackjack' do
+  @gameover = false
+  @player_stand = session[:player_stand]
+
   erb :blackjack
 end
 
-post '/player_hit' do
+post '/hit_stand' do
+  if params.include?('hit')
+    redirect '/player_hit'
+  end
+
+  redirect '/player_stand'
+end
+
+get '/player_hit' do
   session[:player_hand] << session[:deck].pop
   erb :blackjack, :layout => false
 end
 
-post '/player_stand' do
+get '/player_stand' do
   session[:player_stand] = true
   erb :blackjack, :layout => false
+end
+
+get '/update_navbar' do
+  erb :layout
 end

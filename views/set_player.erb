@@ -1,6 +1,23 @@
-<h3>Welcome to Blackjack</h3>
+<form action='/new_player' method='post' class='form-horizontal'
+  style='padding-top: 25px'>
 
-<form action='/setup' method='post'>
-  Enter your name: <input type='text' name='player_name' id='pname_field'><br>
-  <input type='submit' value='Submit' class='btn' id='pname_submit'>
+  <div class='control-group'>
+    <label class='control-label' for='player_name'>Player name</label>
+    <div class='controls'>
+      <input type='text' name='player_name' id='player_name' placeholder='Name' class='input-medium'>
+    </div>
+  </div>
+
+  <div class='control-group'>
+    <label class='control-label' for='bet'>Amount to bet</label>
+    <div class='controls'>
+      <input type='text' name='bet' id='bet' placeholder='100' class='input-mini'>
+    </div>
+  </div>
+  
+  <div class='control-group'>
+    <div class='controls'>
+      <button type='submit' class='btn btn-primary'>Play</button>
+    </div>
+  </div>
 </form>
