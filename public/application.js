@@ -6,12 +6,6 @@ $(document).ready(function() {
     }).done(function(msg) {
       $('#game').replaceWith(msg);
     });
-    $.ajax({
-      type: 'GET',
-      url: 'update_navbar'
-    }).done(function(nav) {
-      $('.navbar').replaceWith('nav .navbar')
-    });
     return false;
   });
 
@@ -21,12 +15,6 @@ $(document).ready(function() {
       url: 'player_stand'
     }).done(function(msg) {
       $('#game').replaceWith(msg);
-    });
-    $.ajax({
-      type: 'GET',
-      url: 'update_navbar'
-    }).done(function(cash) {
-      $('#cash').replaceWith(cash)
     });
     return false;
   });
