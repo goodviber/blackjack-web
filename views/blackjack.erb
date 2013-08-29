@@ -23,7 +23,7 @@
       </form>
     <% end %>
   <% else %>
-    <% until @dealer_total > 17 && @dealer_total > @player_total %>
+    <% until @dealer_total > 17 && @dealer_total >= @player_total %>
         <% session[:dealer_hand] << session[:deck].pop %>
         <% @dealer_total = total(session[:dealer_hand]) %>
     <% end %>
@@ -50,7 +50,7 @@
     <% end %>
   <% end %>
 
-  <h4>Cash: $<%= "%01d" % session[:player_cash].to_i %></h4>
+  <h4>Cash: $<%= "%01d" % session[:player_cash] %></h4>
 
   <% if @gameover %>
     <form action='/play_again' method='post' class='form-inline'>
@@ -76,7 +76,7 @@
     <h3>Dealer's cards:</h3>
     <ul class='inline'>
       <% session[:dealer_hand].each_with_index do |card, idx| %>
-        <% if idx == 0 && !session[:player_stands] %>
+        <% if idx == 0 && !session[:player_stand] %>
           <li>
             <img src='/images/cards/cover.jpg' alt='hidden card' class='card'>
           </li>
@@ -86,7 +86,7 @@
       <% end %>
     </ul>
     <h4>
-      <% if session[:player_stands] %>
+      <% if session[:player_stand] %>
         Total: <%= @dealer_total %>
       <% else %>
         Total hidden

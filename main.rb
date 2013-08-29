@@ -107,10 +107,6 @@ get '/player_stand' do
   erb :blackjack, :layout => false
 end
 
-get '/update_navbar' do
-  erb :layout
-end
-
 post '/play_again' do
   session[:current_bet] = params[:bet].to_i
   redirect '/setup'
