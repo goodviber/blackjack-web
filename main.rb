@@ -110,3 +110,8 @@ end
 get '/update_navbar' do
   erb :layout
 end
+
+post '/play_again' do
+  session[:current_bet] = params[:bet]
+  redirect '/setup'
+end
