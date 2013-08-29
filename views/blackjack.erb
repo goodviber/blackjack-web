@@ -6,7 +6,7 @@
 
   <% if !(@player_stand) %>
     <% if @player_total == 21 %>
-      <div class='alert alert-success'>You have blackjack! You win!</div>
+      <div class='alert alert-success'>You win!</div>
       <% session[:player_cash] += session[:current_bet] %>
       <% @gameover = true %>
     <% elsif @player_total > 21 %>
@@ -29,7 +29,7 @@
     <% end %>
 
     <% if @dealer_total == 21 %>
-      <div class='alert alert-error'>Dealer has blackjack! You lose!</div>
+      <div class='alert alert-error'>Dealer wins!</div>
       <% session[:player_cash] -= session[:current_bet] %>
       <% @gameover = true %>
     <% elsif @dealer_total > 21 %>
@@ -50,17 +50,20 @@
     <% end %>
   <% end %>
 
-  <h4>Cash: $<%= "%01d" % session[:player_cash] %></h4>
-
   <% if @gameover %>
-    <form action='/play_again' method='post' class='form-inline'>
-      <label>Bet:</label>
-      <input type='text' name='bet'>
-      <button type='submit' class='btn btn-primary'>Play Again</button>
-    </form>
+    <% session[:current_bet] = 0 %>
+    <% if session[:player_cash] > 1 %>
+      <form action='/play_again' method='post' class='form-inline'>
+        <label>Bet:</label>
+        <input type='text' name='bet'>
+        <button type='submit' class='btn btn-primary'>Play Again</button>
+      </form>
+    <% else %>
+      <div class='alert'>You're out of cash.</div>
+    <% end %>
   <% end %>
 
-
+  <h4>Cash: $<%= "%01d" % session[:player_cash] %></h4>
 
   <div class='well'>
     <h3><%= session[:player_name] %>'s cards:</h3>

@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'sinatra'
-require 'pry'
 
 helpers do
   def card_img(card)
@@ -55,13 +54,12 @@ get '/' do
 end
 
 post '/new_player' do
-  binding.pry
   if params[:bet].to_i < 1 || params[:bet].to_i > 500
     @error = "You must enter a positive integer less than 500 for your bet."
-    erb :set_player
+    halt erb :set_player
   elsif params[:player_name] == ''
     @error = "You must enter a name."
-    erb :set_player
+    halt erb :set_player
   end
 
   session[:current_bet] = params[:bet].to_i
@@ -117,7 +115,7 @@ post '/play_again' do
     @error = "You must enter a positive bet which you have enough cash to
       cover"
     @gameover = true
-    erb :blackjack
+    halt erb :blackjack
   end
 
   session[:current_bet] = params[:bet].to_i
